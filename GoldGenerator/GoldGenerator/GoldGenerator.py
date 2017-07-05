@@ -43,7 +43,7 @@ class GoldGenerator(Ui_GoldGeneratorForm):
         for item in [str(self.testListWidget.item(i).text()) for i in range(self.testListWidget.count())]:
             
             copyfile(self.sourceEdit.text(), self.refsEdit.text() + "/" + self.gf_abrevEdit.text() + "." + item + ".gold")
-            self.console_message(item + " copied.")
+            self.console_message("Gold file for test: " + item + " succesfully generated.")
 
 
 if __name__ == '__main__':
