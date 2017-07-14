@@ -29,10 +29,16 @@ class GoldGenerator(Ui_GoldGeneratorForm):
         self.refsEdit.setText(self.refs)
 
     def browse_dirs(self):
-        dir = QtWidgets.QFileDialog.getExistingDirectory(dialog, 'Point to local tests directory', '', QtWidgets.QFileDialog.ShowDirsOnly)
-        self.test_names = [test for test in os.listdir(dir) if os.path.isdir(os.path.join(dir, test))]
-        self.testListWidget.addItems(self.test_names)
 
+        #dir = QtWidgets.QFileDialog.getExistingDirectory(dialog, 'Point to local tests directory', '', QtWidgets.QFileDialog.ShowDirsOnly)
+        #self.test_names = [test for test in os.listdir(dir) if os.path.isdir(os.path.join(dir, test))]
+        #self.testListWidget.addItems(self.test_names)
+        getOpenDirectories = getExistingDirectories()
+        tests = str()
+        if getOpenDirectories.exec_():
+            tests = getOpenDirectories.selectedFiles()
+            # Here tests dirs can be manipulated
+            print(tests)
     def remove(self):
         listItem = self.testListWidget.selectedItems()
         for item in listItem:
@@ -44,6 +50,15 @@ class GoldGenerator(Ui_GoldGeneratorForm):
             
             copyfile(self.sourceEdit.text(), self.refsEdit.text() + "/" + self.gf_abrevEdit.text() + "." + item + ".gold")
             self.console_message("Gold file for test: " + item + " succesfully generated.")
+
+class getExistingDirectories(QtWidgets.QFileDialog):
+    def __init__(self, *args):
+        super(getExistingDirectories, self).__init__(*args)
+        self.setOption(self.DontUseNativeDialog, True)
+        self.setFileMode(self.Directory)
+        self.setOption(self.ShowDirsOnly, True)
+        self.findChildren(QtWidgets.QListView)[0].setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.findChildren(QtWidgets.QTreeView)[0].setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
 
 if __name__ == '__main__':

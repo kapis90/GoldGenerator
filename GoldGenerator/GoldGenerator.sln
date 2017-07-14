@@ -5,6 +5,11 @@ VisualStudioVersion = 15.0.26430.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "GoldGenerator", "GoldGenerator\GoldGenerator.pyproj", "{34983161-755C-4D76-BDD2-4019A7580EAE}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{30D57A15-84BC-479E-A6AC-660454C86D77}"
+	ProjectSection(SolutionItems) = preProject
+		GoldGenerator\GoldGeneratorForm.py = GoldGenerator\GoldGeneratorForm.py
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
