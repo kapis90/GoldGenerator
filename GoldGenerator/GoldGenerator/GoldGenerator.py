@@ -25,8 +25,13 @@ class GoldGenerator(Ui_GoldGeneratorForm):
             if test["name"]==os.path.basename(path):
                 return True
 
-    def console_message(self, message):
-        self.consoleEdit.append(message)
+    def console_message(self, message, severity=None):
+
+        styles = {
+                    "ERROR":"<span style=\" font-size:8pt; font-weight:600; color:#ff0000;\" >" + message + "</span>", 
+                    "WARRNING":"<span style=\" font-size:8pt; font-weight:600; color:#0000ff;\" >" + message + "</span>"}
+
+        self.consoleEdit.append(styles.get(severity, message))
 
     def browse_file(self):
         self.source = QFileDialog.getOpenFileName(dialog, 'Open File', '', '')
@@ -48,7 +53,7 @@ class GoldGenerator(Ui_GoldGeneratorForm):
                     self.testsContainer.append({"full_path":test, "name":os.path.basename(test)})
                     self.testListWidget.insertItem(0, os.path.basename(test))
                 else:
-                    self.console_message("Test is already on the list: " + os.path.basename(test) + " has been skipped")
+                    self.console_message("Test is already on the list: " + os.path.basename(test) + " has been skipped", "WARRNING")
             self.testListWidget.sortItems(Qt.AscendingOrder)
         
         print(self.testsContainer)
