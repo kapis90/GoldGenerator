@@ -2,7 +2,9 @@ import os
 import re
 import sys
 from shutil import copyfile
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 from GoldGeneratorForm import Ui_GoldGeneratorForm
 
 class GoldGenerator(Ui_GoldGeneratorForm):
@@ -16,33 +18,54 @@ class GoldGenerator(Ui_GoldGeneratorForm):
         self.addButton.clicked.connect(self.browse_dirs)
         self.removeButton.clicked.connect(self.remove)
         self.generateButton.clicked.connect(self.generate)
+        self.testsContainer = list()
+
+    def _path_exist(self, path):
+        for test in self.testsContainer:
+            if test["name"]==os.path.basename(path):
+                return True
 
     def console_message(self, message):
         self.consoleEdit.append(message)
 
     def browse_file(self):
-        self.source = QtWidgets.QFileDialog.getOpenFileName(dialog, 'Open File', '', '')
+        self.source = QFileDialog.getOpenFileName(dialog, 'Open File', '', '')
         self.sourceEdit.setText(self.source[0])
   
     def browse_dir(self):
-        self.refs = QtWidgets.QFileDialog.getExistingDirectory(dialog, 'Open directory', '', QtWidgets.QFileDialog.ShowDirsOnly)
+        self.refs = QFileDialog.getExistingDirectory(dialog, 'Open directory', '', QFileDialog.ShowDirsOnly)
         self.refsEdit.setText(self.refs)
 
     def browse_dirs(self):
 
-        #dir = QtWidgets.QFileDialog.getExistingDirectory(dialog, 'Point to local tests directory', '', QtWidgets.QFileDialog.ShowDirsOnly)
-        #self.test_names = [test for test in os.listdir(dir) if os.path.isdir(os.path.join(dir, test))]
-        #self.testListWidget.addItems(self.test_names)
+        tests = list()
         getOpenDirectories = getExistingDirectories()
-        tests = str()
         if getOpenDirectories.exec_():
-            tests = getOpenDirectories.selectedFiles()
-            # Here tests dirs can be manipulated
-            print(tests)
+            tests.extend(getOpenDirectories.selectedFiles())
+            tests = sorted(set(tests))
+            for test in tests:
+                if (not self._path_exist(test)):
+                    self.testsContainer.append({"full_path":test, "name":os.path.basename(test)})
+                    self.testListWidget.insertItem(0, os.path.basename(test))
+                else:
+                    self.console_message("Test is already on the list: " + os.path.basename(test) + " has been skipped")
+            self.testListWidget.sortItems(Qt.AscendingOrder)
+        
+        print(self.testsContainer)
+
     def remove(self):
+        indexToRemove = list()
         listItem = self.testListWidget.selectedItems()
         for item in listItem:
-            self.testListWidget.takeItem(self.testListWidget.row(item))
+            test_name = self.testListWidget.takeItem(self.testListWidget.row(item)).text()
+            for i in range(len(self.testsContainer)):
+                if self.testsContainer[i]["name"]==test_name:
+                    indexToRemove.append(i)
+
+            for item in indexToRemove:
+                del self.testsContainer[item]
+            del indexToRemove[:]
+            print(self.testsContainer)
 
     def generate(self):
         
@@ -51,19 +74,19 @@ class GoldGenerator(Ui_GoldGeneratorForm):
             copyfile(self.sourceEdit.text(), self.refsEdit.text() + "/" + self.gf_abrevEdit.text() + "." + item + ".gold")
             self.console_message("Gold file for test: " + item + " succesfully generated.")
 
-class getExistingDirectories(QtWidgets.QFileDialog):
+class getExistingDirectories(QFileDialog):
     def __init__(self, *args):
         super(getExistingDirectories, self).__init__(*args)
         self.setOption(self.DontUseNativeDialog, True)
         self.setFileMode(self.Directory)
         self.setOption(self.ShowDirsOnly, True)
-        self.findChildren(QtWidgets.QListView)[0].setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        self.findChildren(QtWidgets.QTreeView)[0].setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.findChildren(QListView)[0].setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.findChildren(QTreeView)[0].setSelectionMode(QAbstractItemView.ExtendedSelection)
 
 
 if __name__ == '__main__':
-    app = QtWidgets.QApplication(sys.argv)
-    dialog = QtWidgets.QDialog()
+    app = QApplication(sys.argv)
+    dialog = QDialog()
     prog = GoldGenerator(dialog)
     dialog.show()
     sys.exit(app.exec_())

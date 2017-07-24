@@ -32,7 +32,7 @@ class Ui_GoldGeneratorForm(object):
         self.testListWidget.setGeometry(QtCore.QRect(92, 144, 467, 209))
         self.testListWidget.setEditTriggers(QtWidgets.QAbstractItemView.DoubleClicked|QtWidgets.QAbstractItemView.EditKeyPressed)
         self.testListWidget.setDragEnabled(False)
-        self.testListWidget.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        self.testListWidget.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.testListWidget.setViewMode(QtWidgets.QListView.ListMode)
         self.testListWidget.setObjectName("testListWidget")
         self.generateButton = QtWidgets.QPushButton(GoldGeneratorForm)
