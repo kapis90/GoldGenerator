@@ -1,5 +1,5 @@
 import os
-import re
+from pathlib import Path
 import sys
 from shutil import copyfile
 from PyQt5.QtCore import *
@@ -54,28 +54,38 @@ class GoldGenerator(Ui_GoldGeneratorForm):
             self.testListWidget.insertItems(0, self.testsContainer.values())
             self.testListWidget.sortItems(Qt.AscendingOrder)
         
-        print(self.testsContainer)
+        #print(self.testsContainer)
 
     def remove(self):
-        keysToRemove = list()
+        
         listItem = self.testListWidget.selectedItems()
-        for item in listItem:
-            test_name = self.testListWidget.takeItem(self.testListWidget.row(item)).text()
-            for path, name in self.testsContainer.items():
-                if name==test_name:
-                    keysToRemove.append(path)
 
-            for item in keysToRemove:
-                del self.testsContainer[item]
-            del keysToRemove[:]
-            print(self.testsContainer)
+        for item in listItem:
+            
+            test_name = self.testListWidget.takeItem(self.testListWidget.row(item)).text()
+            self.testsContainer = {k:v for k,v in self.testsContainer.items() if v!=test_name}
+
+        #print(self.testsContainer)
 
     def generate(self):
-        
-        for item in [str(self.testListWidget.item(i).text()) for i in range(self.testListWidget.count())]:
+
+        if self.searchBox.isChecked():
             
-            copyfile(self.sourceEdit.text(), self.refsEdit.text() + "/" + self.gf_abrevEdit.text() + "." + item + ".gold")
-            self.console_message("Gold file for test: " + item + " succesfully generated.")
+            for test_path, name in self.testsContainer.items():
+                file_to_copy = Path(test_path + "/" + self.sourceEdit.text())
+
+                try:
+                    copyfile(file_to_copy, self.refsEdit.text() + "/" + self.gf_abrevEdit.text() + "." + name + ".gold")
+                except FileNotFoundError:
+                    self.console_message("File " + str(file_to_copy) + " does not exists. "+ "\nTest " + name + " has been skipped", "WARRNING")
+                else:
+                    self.console_message("Gold file for test: " + name + " succesfully generated.")
+        
+        else:
+
+            for item in [str(self.testListWidget.item(i).text()) for i in range(self.testListWidget.count())]:
+                copyfile(self.sourceEdit.text(), self.refsEdit.text() + "/" + self.gf_abrevEdit.text() + "." + item + ".gold")
+                self.console_message("Gold file for test: " + item + " succesfully generated.")
 
 class getExistingDirectories(QFileDialog):
     def __init__(self, *args):
