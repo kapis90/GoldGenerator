@@ -18,7 +18,7 @@ class GoldGenerator(Ui_GoldGeneratorForm):
         self.addButton.clicked.connect(self.browse_dirs)
         self.removeButton.clicked.connect(self.remove)
         self.generateButton.clicked.connect(self.generate)
-        self.testsContainer = list()
+        self.testsContainer = dict()
 
     def _path_exist(self, path):
         for test in self.testsContainer:
@@ -43,33 +43,31 @@ class GoldGenerator(Ui_GoldGeneratorForm):
 
     def browse_dirs(self):
 
-        tests = list()
+        tests_path = list()
         getOpenDirectories = getExistingDirectories()
         if getOpenDirectories.exec_():
-            tests.extend(getOpenDirectories.selectedFiles())
-            tests = sorted(set(tests))
-            for test in tests:
-                if (not self._path_exist(test)):
-                    self.testsContainer.append({"full_path":test, "name":os.path.basename(test)})
-                    self.testListWidget.insertItem(0, os.path.basename(test))
-                else:
-                    self.console_message("Test is already on the list: " + os.path.basename(test) + " has been skipped", "WARRNING")
+            tests_path.extend(getOpenDirectories.selectedFiles())
+            for path in tests_path:
+                self.testsContainer[path] = os.path.basename(path)
+
+            self.testListWidget.clear()
+            self.testListWidget.insertItems(0, self.testsContainer.values())
             self.testListWidget.sortItems(Qt.AscendingOrder)
         
         print(self.testsContainer)
 
     def remove(self):
-        indexToRemove = list()
+        keysToRemove = list()
         listItem = self.testListWidget.selectedItems()
         for item in listItem:
             test_name = self.testListWidget.takeItem(self.testListWidget.row(item)).text()
-            for i in range(len(self.testsContainer)):
-                if self.testsContainer[i]["name"]==test_name:
-                    indexToRemove.append(i)
+            for path, name in self.testsContainer.items():
+                if name==test_name:
+                    keysToRemove.append(path)
 
-            for item in indexToRemove:
+            for item in keysToRemove:
                 del self.testsContainer[item]
-            del indexToRemove[:]
+            del keysToRemove[:]
             print(self.testsContainer)
 
     def generate(self):

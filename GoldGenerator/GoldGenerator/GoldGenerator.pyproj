@@ -6,8 +6,7 @@
     <ProjectGuid>34983161-755c-4d76-bdd2-4019a7580eae</ProjectGuid>
     <ProjectHome>.</ProjectHome>
     <StartupFile>GoldGenerator.py</StartupFile>
-    <SearchPath>
-    </SearchPath>
+    <SearchPath>UI</SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
     <Name>GoldGenerator</Name>
