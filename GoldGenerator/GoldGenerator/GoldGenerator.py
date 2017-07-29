@@ -20,10 +20,37 @@ class GoldGenerator(Ui_GoldGeneratorForm):
         self.generateButton.clicked.connect(self.generate)
         self.testsContainer = dict()
 
-    def _path_exist(self, path):
-        for test in self.testsContainer:
-            if test["name"]==os.path.basename(path):
-                return True
+    def _validate(self):
+        
+        if self.sourceEdit.text() !="":
+            source_flag = True 
+        else:
+            source_flag = False
+            self.console_message("Source file cannot be empty", "ERROR")
+
+        if self.refsEdit.text() !="":
+            refs_flag = True
+        else:
+            refs_flag = False
+            self.console_message("Refs directory cannot be empty", "ERROR")
+
+        if self.gf_abrevEdit.text() !="":
+            abrev_flag = True
+        else:
+            abrev_flag = False
+            self.console_message("GF_ABREV cannot be empty", "ERROR")
+
+        if self.testsContainer != {}:
+            test_flag = True
+        else:
+            test_flag = False
+            self.console_message("Test directories cannot be empty", "ERROR")
+
+        return source_flag and refs_flag and abrev_flag and test_flag
+        
+        
+            
+        
 
     def console_message(self, message, severity=None):
 
@@ -35,11 +62,13 @@ class GoldGenerator(Ui_GoldGeneratorForm):
 
     def browse_file(self):
         self.source = QFileDialog.getOpenFileName(dialog, 'Open File', '', '')
-        self.sourceEdit.setText(self.source[0])
+        if self.source != "":
+            self.sourceEdit.setText(self.source[0])
   
     def browse_dir(self):
         self.refs = QFileDialog.getExistingDirectory(dialog, 'Open directory', '', QFileDialog.ShowDirsOnly)
-        self.refsEdit.setText(self.refs)
+        if self.refs != "":
+            self.refsEdit.setText(self.refs)
 
     def browse_dirs(self):
 
@@ -69,23 +98,30 @@ class GoldGenerator(Ui_GoldGeneratorForm):
 
     def generate(self):
 
-        if self.searchBox.isChecked():
+        if self._validate():
+            if self.searchBox.isChecked():
+                
+                for test_path, name in self.testsContainer.items():
+                    file_to_copy = Path(test_path + "/" + self.sourceEdit.text())
+
+                    try:
+                        copyfile(file_to_copy, self.refsEdit.text() + "/" + self.gf_abrevEdit.text() + "." + name + ".gold")
+                    except (FileExistsError, FileNotFoundError) as error:
+                        self.console_message("File " + str(file_to_copy) + " does not exists. ", "ERROR")
+                        self.console_message("Gold generation for " + name + " has been skipped", "WARRNING")
+                    else:
+                        self.console_message("Gold file for test: " + name + " succesfully generated.")
             
-            for test_path, name in self.testsContainer.items():
-                file_to_copy = Path(test_path + "/" + self.sourceEdit.text())
+            else:
 
-                try:
-                    copyfile(file_to_copy, self.refsEdit.text() + "/" + self.gf_abrevEdit.text() + "." + name + ".gold")
-                except FileNotFoundError:
-                    self.console_message("File " + str(file_to_copy) + " does not exists. "+ "\nTest " + name + " has been skipped", "WARRNING")
-                else:
-                    self.console_message("Gold file for test: " + name + " succesfully generated.")
-        
-        else:
-
-            for item in [str(self.testListWidget.item(i).text()) for i in range(self.testListWidget.count())]:
-                copyfile(self.sourceEdit.text(), self.refsEdit.text() + "/" + self.gf_abrevEdit.text() + "." + item + ".gold")
-                self.console_message("Gold file for test: " + item + " succesfully generated.")
+                for path, name in self.testsContainer.items():
+                    try:
+                        copyfile(self.sourceEdit.text(), self.refsEdit.text() + "/" + self.gf_abrevEdit.text() + "." + name + ".gold")
+                    except (FileExistsError, FileNotFoundError) as error:
+                        self.console_message("File " + self.sourceEdit.text() + " does not exists. ", "ERROR")
+                        self.console_message("Gold generation for " + name + " has been skipped", "WARRNING")
+                    else:
+                        self.console_message("Gold file for test: " + name + " succesfully generated.")
 
 class getExistingDirectories(QFileDialog):
     def __init__(self, *args):
