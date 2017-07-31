@@ -72,7 +72,7 @@ class Ui_GoldGeneratorForm(object):
         self.testListWidget.setMinimumSize(QtCore.QSize(0, 300))
         self.testListWidget.setEditTriggers(QtWidgets.QAbstractItemView.DoubleClicked|QtWidgets.QAbstractItemView.EditKeyPressed)
         self.testListWidget.setDragEnabled(False)
-        self.testListWidget.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        self.testListWidget.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         self.testListWidget.setViewMode(QtWidgets.QListView.ListMode)
         self.testListWidget.setObjectName("testListWidget")
         self.gridLayout_2.addWidget(self.testListWidget, 5, 1, 4, 2)
