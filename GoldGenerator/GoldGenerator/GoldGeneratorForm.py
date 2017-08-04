@@ -118,6 +118,9 @@ class Ui_GoldGeneratorForm(object):
         self.retranslateUi(GoldGeneratorForm)
         self.searchBox.toggled['bool'].connect(self.sourceBrowseButton.setDisabled)
         QtCore.QMetaObject.connectSlotsByName(GoldGeneratorForm)
+        self.consoleEdit.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.consoleEdit.customContextMenuRequested.connect(self.openMenu)
+        
         GoldGeneratorForm.setTabOrder(self.searchBox, self.sourceEdit)
         GoldGeneratorForm.setTabOrder(self.sourceEdit, self.sourceBrowseButton)
         GoldGeneratorForm.setTabOrder(self.sourceBrowseButton, self.refsEdit)
@@ -140,4 +143,14 @@ class Ui_GoldGeneratorForm(object):
         self.refsLabel.setText(_translate("GoldGeneratorForm", "Refs directory:"))
         self.groupBox.setTitle(_translate("GoldGeneratorForm", "Console"))
         self.generateButton.setText(_translate("GoldGeneratorForm", "Generate"))
+
+    def openMenu(self, position):
+        
+        menu = QtWidgets.QMenu()
+        clearAction = menu.addAction("Clear All")
+        action = menu.exec_(self.consoleEdit.mapToGlobal(position))
+        if action == clearAction:
+            self.consoleEdit.clear()
+
+
 
