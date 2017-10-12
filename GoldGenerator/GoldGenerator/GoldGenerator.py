@@ -106,6 +106,7 @@ class GoldGenerator(Ui_GoldGeneratorForm):
 
                     try:
                         copyfile(file_to_copy, self.refsEdit.text() + "/" + self.gf_abrevEdit.text() + "." + name + ".gold")
+                        os.remove(file_to_copy)
                     except (FileExistsError, FileNotFoundError) as error:
                         self.console_message("File " + str(file_to_copy) + " does not exists. ", "ERROR")
                         self.console_message("Gold generation for " + name + " has been skipped", "WARRNING")
@@ -117,6 +118,7 @@ class GoldGenerator(Ui_GoldGeneratorForm):
                 for path, name in self.testsContainer.items():
                     try:
                         copyfile(self.sourceEdit.text(), self.refsEdit.text() + "/" + self.gf_abrevEdit.text() + "." + name + ".gold")
+                        os.remove(self.sourceEdit.text())
                     except (FileExistsError, FileNotFoundError) as error:
                         self.console_message("File " + self.sourceEdit.text() + " does not exists. ", "ERROR")
                         self.console_message("Gold generation for " + name + " has been skipped", "WARRNING")
