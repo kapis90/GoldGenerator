@@ -12,15 +12,19 @@ class GoldGenerator(Ui_GoldGeneratorForm):
     def __init__(self, dialog):
         Ui_GoldGeneratorForm.__init__(self)
         self.setupUi(dialog)
-
+        
+        # Connect signals
         self.sourceBrowseButton.clicked.connect(self.browse_file)
         self.refsBrowseButton.clicked.connect(self.browse_dir)
         self.addButton.clicked.connect(self.browse_dirs)
         self.removeButton.clicked.connect(self.remove)
         self.generateButton.clicked.connect(self.generate)
+        
+        # Declare an empty container for tests
         self.testsContainer = dict()
 
     def _validate(self):
+        """ Function to validate if all fields are filled up correctly. Return proper error to console if not """
         
         if self.sourceEdit.text() !="":
             source_flag = True 
@@ -49,28 +53,31 @@ class GoldGenerator(Ui_GoldGeneratorForm):
         return source_flag and refs_flag and abrev_flag and test_flag
         
         
-            
-        
-
     def console_message(self, message, severity=None):
+        """ Function to construct console message. Severity could be ERROR, WARNING or not specified. If not specifed its normal black text """
 
         styles = {
                     "ERROR":"<span style=\" font-size:8pt; font-weight:600; color:#ff0000;\" >" + message + "</span>", 
-                    "WARRNING":"<span style=\" font-size:8pt; font-weight:600; color:#0000ff;\" >" + message + "</span>"}
+                    "WARNING":"<span style=\" font-size:8pt; font-weight:600; color:#0000ff;\" >" + message + "</span>"}
 
         self.consoleEdit.append(styles.get(severity, message))
 
     def browse_file(self):
+        """ Function to fill up source file filed """
+
         self.source = QFileDialog.getOpenFileName(dialog, 'Open File', '', '')
         if self.source != "":
             self.sourceEdit.setText(self.source[0])
-  
+
     def browse_dir(self):
+        """ Function to fill up refs dir filed """
+
         self.refs = QFileDialog.getExistingDirectory(dialog, 'Open directory', '', QFileDialog.ShowDirsOnly)
         if self.refs != "":
             self.refsEdit.setText(self.refs)
 
     def browse_dirs(self):
+        """ Function to select test directories """
 
         tests_path = list()
         getOpenDirectories = getExistingDirectories()
@@ -86,6 +93,7 @@ class GoldGenerator(Ui_GoldGeneratorForm):
         #print(self.testsContainer)
 
     def remove(self):
+        """ Function to remove selected test directories """
         
         listItem = self.testListWidget.selectedItems()
 
@@ -97,10 +105,16 @@ class GoldGenerator(Ui_GoldGeneratorForm):
         #print(self.testsContainer)
 
     def generate(self):
+        """ Main function to generate golds
 
+        """
+        
+        # Validation if all fileds filed up
         if self._validate():
+            # 'Check of result' is checked
             if self.searchBox.isChecked():
                 
+                # Join paths for each test, copy to refs dir and delete file
                 for test_path, name in self.testsContainer.items():
                     file_to_copy = Path(test_path + "/" + self.sourceEdit.text())
 
@@ -109,10 +123,11 @@ class GoldGenerator(Ui_GoldGeneratorForm):
                         os.remove(file_to_copy)
                     except (FileExistsError, FileNotFoundError) as error:
                         self.console_message("File " + str(file_to_copy) + " does not exists. ", "ERROR")
-                        self.console_message("Gold generation for " + name + " has been skipped", "WARRNING")
+                        self.console_message("Gold generation for " + name + " has been skipped", "WARNING")
                     else:
                         self.console_message("Gold file for test: " + name + " succesfully generated.")
-            
+
+            # Copy specified file for all tests to refs dir
             else:
 
                 for path, name in self.testsContainer.items():
@@ -121,11 +136,13 @@ class GoldGenerator(Ui_GoldGeneratorForm):
                         os.remove(self.sourceEdit.text())
                     except (FileExistsError, FileNotFoundError) as error:
                         self.console_message("File " + self.sourceEdit.text() + " does not exists. ", "ERROR")
-                        self.console_message("Gold generation for " + name + " has been skipped", "WARRNING")
+                        self.console_message("Gold generation for " + name + " has been skipped", "WARNING")
                     else:
                         self.console_message("Gold file for test: " + name + " succesfully generated.")
 
 class getExistingDirectories(QFileDialog):
+    """ Overloaded class for selecting tests dialog (to handle multiselection of dirs) """
+
     def __init__(self, *args):
         super(getExistingDirectories, self).__init__(*args)
         self.setOption(self.DontUseNativeDialog, True)
