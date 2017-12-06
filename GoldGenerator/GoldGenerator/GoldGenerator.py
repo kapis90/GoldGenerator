@@ -1,9 +1,10 @@
-import os
+import os.path
+from os import remove
 from pathlib import Path
 import sys
 from shutil import copyfile
 from PyQt5.QtCore import *
-from PyQt5.QtGui import *
+#from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 from GoldGeneratorForm import Ui_GoldGeneratorForm
 
@@ -133,7 +134,6 @@ class GoldGenerator(Ui_GoldGeneratorForm):
                 for path, name in self.testsContainer.items():
                     try:
                         copyfile(self.sourceEdit.text(), self.refsEdit.text() + "/" + self.gf_abrevEdit.text() + "." + name + ".gold")
-                        os.remove(self.sourceEdit.text())
                     except (FileExistsError, FileNotFoundError) as error:
                         self.console_message("File " + self.sourceEdit.text() + " does not exists. ", "ERROR")
                         self.console_message("Gold generation for " + name + " has been skipped", "WARNING")
