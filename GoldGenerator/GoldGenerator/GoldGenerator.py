@@ -21,6 +21,7 @@ class GoldGenerator(Ui_GoldGeneratorForm):
         self.removeButton.clicked.connect(lambda: self.remove(self.testListWidget.selectedItems()))
         self.generateButton.clicked.connect(self.generate)
         
+        
         # Declare an empty container for tests
         self.testsContainer = dict()
 
@@ -72,12 +73,13 @@ class GoldGenerator(Ui_GoldGeneratorForm):
         
         return result
 
-    def console_message(self, message, severity=None):
+    def console_message(self, message, severity="NORMAL"):
         """ Function to construct console message. Severity could be ERROR, WARNING or not specified. If not specifed its normal black text """
 
         styles = {
                     "ERROR":"<span style=\" font-size:8pt; color:#ff0000;\" >" + message + "</span>", 
-                    "WARNING":"<span style=\" font-size:8pt; color:#0000ff;\" >" + message + "</span>"}
+                    "WARNING":"<span style=\" font-size:8pt; color:#0000ff;\" >" + message + "</span>",
+                    "NORMAL":"<span style=\" font-size:8pt; color:#000000;\" >" + message + "</span>"}
 
         self.consoleEdit.append(styles.get(severity, message)) # message is a default key returned when severity is None (not found in styles dict)
 

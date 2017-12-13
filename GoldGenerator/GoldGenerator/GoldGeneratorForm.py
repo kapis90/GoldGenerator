@@ -130,6 +130,9 @@ class Ui_GoldGeneratorForm(object):
         QtCore.QMetaObject.connectSlotsByName(GoldGeneratorForm)
         self.consoleEdit.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.consoleEdit.customContextMenuRequested.connect(self.openMenu)
+        self.sourceEdit.textChanged.connect(self.clearListColors)
+        self.refsEdit.textChanged.connect(self.clearListColors)
+        self.gf_abrevEdit.textChanged.connect(self.clearListColors)
         GoldGeneratorForm.setTabOrder(self.searchBox, self.sourceEdit)
         GoldGeneratorForm.setTabOrder(self.sourceEdit, self.sourceBrowseButton)
         GoldGeneratorForm.setTabOrder(self.sourceBrowseButton, self.refsEdit)
@@ -154,7 +157,7 @@ class Ui_GoldGeneratorForm(object):
         self.searchBox.setText(_translate("GoldGeneratorForm", "Search for result"))
         self.keepFailuresBox.setText(_translate("GoldGeneratorForm", "Keep Failures Only"))
         self.generateButton.setText(_translate("GoldGeneratorForm", "Generate"))
-		
+
     def openMenu(self, position):
         
         menu = QtWidgets.QMenu()
@@ -162,6 +165,12 @@ class Ui_GoldGeneratorForm(object):
         action = menu.exec_(self.consoleEdit.mapToGlobal(position))
         if action == clearAction:
             self.consoleEdit.clear()
+
+    def clearListColors(self):
+
+        for i in range(0,self.testListWidget.count()):
+            self.testListWidget.item(i).setForeground(QtCore.Qt.black)
+
 
 
 
