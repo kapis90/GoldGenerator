@@ -155,6 +155,9 @@ class GoldGenerator(Ui_GoldGeneratorForm):
                             self.console_message("File " + str(file_to_copy) + " does not exists. ", "ERROR")
                             self.console_message("Gold generation for " + name + " has been skipped", "WARNING")
                             self.testListWidget.findItems(name, Qt.MatchExactly)[0].setForeground(Qt.red)
+                        except Exception as error:
+                            self.console_message(str(error), "ERROR")
+                            self.testListWidget.findItems(name, Qt.MatchExactly)[0].setForeground(Qt.red)
                         else:
                             self.console_message("Gold file for test: " + name + " succesfully generated.")
                             self.testListWidget.findItems(name, Qt.MatchExactly)[0].setForeground(Qt.darkGreen)
@@ -170,6 +173,9 @@ class GoldGenerator(Ui_GoldGeneratorForm):
                         except (FileExistsError, FileNotFoundError) as error:
                             self.console_message("File " + self.sourceEdit.text() + " does not exists. ", "ERROR")
                             self.console_message("Gold generation for " + name + " has been skipped", "WARNING")
+                            self.testListWidget.findItems(name, Qt.MatchExactly)[0].setForeground(Qt.red)
+                        except Exception as error:
+                            self.console_message(str(error), "ERROR")
                             self.testListWidget.findItems(name, Qt.MatchExactly)[0].setForeground(Qt.red)
                         else:
                             self.console_message("Gold file for test: " + name + " succesfully generated.")
